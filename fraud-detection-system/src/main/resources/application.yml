@@ -3,30 +3,44 @@ spring:
     name: fraud-detection-system
 
   kafka:
+    # Kafka broker address — change this for production deployment
     bootstrap-servers: localhost:9092
 
     producer:
+      # Serialize keys as plain strings (userId)
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # Serialize Transaction objects as JSON
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
     consumer:
+      # Consumer group for fraud alert listeners
       group-id: fraud-alert-group
+      # Read from beginning of topic if no offset exists
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # Deserialize JSON back into Java objects
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
+        # Trust only our model classes during deserialization — security measure
         spring.json.trusted.packages: "com.example.fraud_detection_system.model"
 
     streams:
+      # Unique ID for this Kafka Streams app — Kafka uses this to track state
       application-id: fraud-detection-streams
+      # Default serializer for stream keys
       default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      # Default serializer for stream values
       default-value-serde: org.springframework.kafka.support.serializer.JsonSerde
       properties:
+        # Log and skip malformed messages instead of crashing the stream
         default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
 
-spring.json.trusted.packages: "com.example.fraud_detection_system.model"
+# Fraud detection rule thresholds — tune these without changing code
 fraud:
   rules:
+    # Rule 1: flag transactions exceeding this amount
     large-transaction-threshold: 10000.00
+    # Rule 2: flag if a user exceeds this many transactions within the window
     velocity-transaction-count: 5
+    # Rule 2: sliding window size in seconds
     velocity-window-seconds: 60
