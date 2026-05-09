@@ -44,3 +44,11 @@ fraud:
     velocity-transaction-count: 5
     # Rule 2: sliding window size in seconds
     velocity-window-seconds: 60
+
+streams:
+  application-id: fraud-detection-streams
+  state-dir: D:/FraudShield/fraud-detection-system/kafka-streams-state
+  default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+  default-value-serde: org.springframework.kafka.support.serializer.JsonSerde
+  properties:
+    default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
