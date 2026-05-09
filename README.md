@@ -77,23 +77,48 @@ kafka-topics.bat --create --topic fraud-alerts --bootstrap-server localhost:9092
 mvn spring-boot:run
 ```
 
-**4. Simulate Transactions**
-```bash
-# Normal transaction
-curl -X POST http://localhost:8080/api/transactions \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"user1","amount":500.00,"location":"Delhi"}'
+## 4. Simulate Transactions
 
-# Large transaction fraud
-curl -X POST http://localhost:8080/api/transactions \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"user1","amount":15000.00,"location":"Delhi"}'
+Open Swagger UI:
 
-# Location anomaly fraud (run immediately after above)
-curl -X POST http://localhost:8080/api/transactions \
-  -H "Content-Type: application/json" \
-  -d '{"userId":"user1","amount":200.00,"location":"Dubai"}'
+```text
+http://localhost:8080/swagger-ui/index.html
 ```
+
+Use `POST /api/transactions` to test fraud scenarios.
+
+### Normal Transaction
+```json
+{
+  "userId": "user1",
+  "amount": 500.00,
+  "location": "Delhi"
+}
+```
+
+### Large Transaction Fraud
+```json
+{
+  "userId": "user1",
+  "amount": 15000.00,
+  "location": "Delhi"
+}
+```
+
+### Location Anomaly Fraud
+Run immediately after the previous request.
+
+```json
+{
+  "userId": "user1",
+  "amount": 200.00,
+  "location": "Dubai"
+}
+```
+
+Check:
+- Application logs
+- `fraud-alerts` Kafka topic
 
 ## Configuration
 
@@ -121,7 +146,7 @@ src/main/java/com/example/fraud_detection_system/
 
 ## Future Improvements
 
-- Risk scoring engine — weighted score instead of binary fraud/not-fraud
+- Risk scoring engine — weighted score instead of binary fraud/not-fraud (done)
 - Redis-backed behavioral state — track user history across sessions
 - Additional rules — merchant anomaly, device fingerprinting, card testing detection
 - Prometheus + Grafana dashboard for fraud metrics
