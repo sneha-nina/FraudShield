@@ -5,8 +5,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class VelocityRule {
-    @Value("${fraud.rules.velocity-transaction-count}")
-    private int maxTransactionCount;
+
+    private final int maxTransactionCount;
+
+    public VelocityRule(
+            @Value("${fraud.rules.velocity-transaction-count}") int maxTransactionCount) {
+        this.maxTransactionCount = maxTransactionCount;
+    }
 
     public boolean isFraudulent(long transactionCount) {
         return transactionCount >= maxTransactionCount;

@@ -6,8 +6,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LargeTransactionRule {
-    @Value("${fraud.rules.large-transaction-threshold}")
-    private double threshold;
+
+    private final double threshold;
+
+    public LargeTransactionRule(
+            @Value("${fraud.rules.large-transaction-threshold}") double threshold) {
+        this.threshold = threshold;
+    }
 
     public boolean isFraudulent(Transaction transaction) {
         return transaction.amount() > threshold;
